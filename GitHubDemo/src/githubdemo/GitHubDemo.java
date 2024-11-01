@@ -17,6 +17,7 @@ public class GitHubDemo {
         // TODO code application logic here
         System.out.println("Hello GitHub");
         System.out.println("Another Test");
+        System.out.println("One more test");
     }
     
 }
