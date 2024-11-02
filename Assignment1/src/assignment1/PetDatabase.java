@@ -62,7 +62,6 @@ public class PetDatabase {
         System.out.println(" 6) Search pets by age");
         System.out.println(" 7) Exit program");
         System.out.print("Your choice: ");
-        System.out.println();
         
         //Checks for if an int was entered
         if (s.hasNextInt()) {
@@ -83,7 +82,7 @@ public class PetDatabase {
         
         //continues until user enters done
         while (!petInput.equals("done")){
-            System.out.print("add pet - name age - enter done to exit: ");
+            System.out.print("add pet in format - name age - enter done to exit: ");
             petInput = s.nextLine();
         
             //checks for done, to exit, or attempts to add pet
@@ -99,6 +98,10 @@ public class PetDatabase {
                 
                 //updates number of pets added this session
                 addedCount += 1;
+                }
+                else {
+                    System.out.println("----Invalid Entry Format----");
+                    System.out.println("Ensure the name and age are seperated by a space.");
                 }
             }
         }
@@ -116,6 +119,42 @@ public class PetDatabase {
         
         PetDatabase.printTableFooter(pets.size());
 
+    }
+    
+    //method to find all pet names containing a user entered name, .contains used to capture similar names in the search too.
+    private static void searchByName(){
+        //Get pet name from user
+        System.out.print("Enter a pet name to search: ");
+        s.nextLine();
+        String searchName = s.nextLine();
+        int numPetsFound = 0;
+        
+        //print table with pets matching the search name
+        PetDatabase.printTableHeader();
+        for (int i = 0; i < pets.size(); ++i) {
+            if(pets.get(i).getName().contains(searchName)) {
+                PetDatabase.printTableRow(i, pets.get(i).getName(), pets.get(i).getAge());
+                numPetsFound += 1;
+            }
+        }
+        PetDatabase.printTableFooter(numPetsFound);
+    }
+    
+    private static void searchByAge(){
+        //Get pet age from user
+        System.out.print("Enter a pet age to search: ");
+        int searchAge = s.nextInt();
+        int numPetsFound = 0;
+        
+        //print table with pets matching the search age
+        PetDatabase.printTableHeader();
+        for (int i = 0; i < pets.size(); ++i) {
+            if(pets.get(i).getAge() == searchAge) {
+                PetDatabase.printTableRow(i, pets.get(i).getName(), pets.get(i).getAge());
+                numPetsFound += 1;
+            }
+        }
+        PetDatabase.printTableFooter(numPetsFound);
     }
     
     //method to print a properly formated table header
@@ -152,10 +191,10 @@ public class PetDatabase {
                 System.out.println("Feature not added yet."); //Remove a pet case
             break;
             case 5:
-                System.out.println("Feature not added yet."); //Search by name case
+                PetDatabase.searchByName(); //Search by name case
             break;
             case 6:
-                System.out.println("Feature not added yet."); //Search by age case
+                PetDatabase.searchByAge(); //Search by age case
             break;
             case 7:
                 System.out.println("Goodbye!");
