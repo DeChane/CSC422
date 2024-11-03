@@ -140,10 +140,20 @@ public class PetDatabase {
         PetDatabase.printTableFooter(numPetsFound);
     }
     
+    //method to find all pet names equal to the user entered age
     private static void searchByAge(){
         //Get pet age from user
         System.out.print("Enter a pet age to search: ");
-        int searchAge = s.nextInt();
+        int searchAge = -1;
+        while(searchAge < 0){
+            if (s.hasNextInt()) {
+                searchAge = s.nextInt();
+            }
+            else {
+                s.next();
+                System.out.println("----Enter a valid age----");
+            }
+        }
         int numPetsFound = 0;
         
         //print table with pets matching the search age
@@ -155,6 +165,87 @@ public class PetDatabase {
             }
         }
         PetDatabase.printTableFooter(numPetsFound);
+    }
+    
+    //method to update an exist pets age or name
+    private static void updatePet(){
+        int updateID = -1;
+        
+        //Display table to allow user to select the index of the pet they wish to update
+        PetDatabase.showAllPets();
+        
+        //Get the ID of the pet to be updated and check to make sure it is a valid ID
+        while(updateID < 0){
+            System.out.print("Enter an ID from the above table to update that pet: ");
+            if (s.hasNextInt()) {
+                updateID = s.nextInt();
+                if (updateID > pets.size()){
+                    System.out.println("----Invalid ID----");
+                    updateID = -1;
+                }
+            }
+            else {
+                s.next();
+                System.out.println("----Invalid ID----");
+            }
+        }
+        
+        String oldName = pets.get(updateID).getName();
+        int oldAge = pets.get(updateID).getAge();
+        
+        //Display pet that is being updated
+        System.out.printf("Updating: %s %d\n", oldName, oldAge);
+        
+        //Get new pet information from user
+        s.nextLine();
+        System.out.print("Enter a new name and age: ");
+        String updateInput = s.nextLine();
+        
+        String[] TempArray = updateInput.split(" ");
+                
+        //check that array contains right number of entities to update the pet information
+        if (TempArray.length == 2) {
+            //update name and age
+            pets.get(updateID).setName(TempArray[0]);
+            pets.get(updateID).setAge(Integer.parseInt(TempArray[1]));
+            
+            //display old information and what it was changed to.
+            System.out.printf("Pet updated from: %s %d\n", oldName, oldAge);
+            System.out.printf("to: %s %d\n", pets.get(updateID).getName(), pets.get(updateID).getAge());
+        }
+        else {
+            System.out.println("----Invalid Entry Format----");
+            System.out.println("Ensure the name and age are seperated by a space.");
+        }
+    }
+    
+    //method to remove pet from ArrayList based on idex/ID of pet, displays information of pet removed too
+    private static void removePet(){
+        int removeID = -1;
+
+        //Display table to allow user to select the index of the pet they wish to remove
+        PetDatabase.showAllPets();
+        
+          //Get the ID of the pet to be removed and check to make sure it is a valid ID
+        while(removeID < 0){
+            System.out.print("Enter an ID from the above table to remove that pet: ");
+            if (s.hasNextInt()) {
+                removeID = s.nextInt();
+                if (removeID > pets.size()){
+                    System.out.println("----Invalid ID----");
+                    removeID = -1;
+                }
+            }
+            else {
+                s.next();
+                System.out.println("----Invalid ID----");
+            }
+        }
+        
+        //Display pet that is being removed
+        System.out.printf("%s %d has been removed\n", pets.get(removeID).getName(), pets.get(removeID).getAge());
+        
+        pets.remove(removeID);
     }
     
     //method to print a properly formated table header
@@ -169,7 +260,7 @@ public class PetDatabase {
     
     //method to print a properly formated table footer
     private static void printTableFooter(int rowCount) {
-        System.out.println("+----------------------+\n" + rowCount + " rows in set.");
+        System.out.println("+----------------------+\n" + rowCount + " pets in database.");
     }
     
     public static void main(String[] args) {
@@ -185,10 +276,10 @@ public class PetDatabase {
                 PetDatabase.addPets();
             break;
             case 3:
-                System.out.println("Feature not added yet."); //Update pet case
+                PetDatabase.updatePet(); //Update pet case
             break;
             case 4:
-                System.out.println("Feature not added yet."); //Remove a pet case
+                PetDatabase.removePet(); //Remove a pet case
             break;
             case 5:
                 PetDatabase.searchByName(); //Search by name case
