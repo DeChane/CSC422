@@ -53,6 +53,7 @@ public class PetDatabase {
     static ArrayList<Pet> pets = new ArrayList<>();
     static Scanner s = new Scanner(System.in);
     static String filename = "petDatabase.txt";
+    static final int CAPACITY = 5;
     
     //method to display menu and retrieve input from user
     private static int getUserChoice() {
@@ -89,6 +90,14 @@ public class PetDatabase {
         
         //continues until user enters done
         while (!petInput.equals("done")){
+            
+            //ensures user can't exceed the capacity of the database
+            if(pets.size() == CAPACITY){
+                System.out.println("----Database has reached it's capacity----");
+                System.out.println("----To add another pet, one must be removed----");
+                break;
+            }
+            
             System.out.print("add pet in format - name age - enter done to exit: ");
             petInput = s.nextLine();
         
@@ -101,11 +110,29 @@ public class PetDatabase {
                 
                 //checks that array contains only right number of entities to create a pet
                 if (TempArray.length == 2) {
-                pets.add(new Pet(TempArray[0], Integer.parseInt(TempArray[1])));
-                PetDatabase.saveDatabase();
+                    
+                    //check that the age is valid and that it lies in the desired range of 1-20
+                    try{
+                        int petAge = Integer.parseInt(TempArray[1]);
+                        if (1 <= petAge && petAge <= 20){
+                        
+                            //pet added to database and saved
+                            pets.add(new Pet(TempArray[0], petAge));
+                            PetDatabase.saveDatabase();
                 
-                //updates number of pets added this session
-                addedCount += 1;
+                        //updates number of pets added this session
+                        addedCount += 1;
+                        }
+                        else {
+                            System.out.println("----Pet age must be between 1 and 20----");
+                        }
+                    }
+                    catch (Exception e) {
+                        System.out.println("----Invalid Input----");
+                        System.out.println("----Ensure the format 'name age' is used----");
+                        System.out.println("----Age must be a number----");
+                    }
+               
                 }
                 else {
                     System.out.println("----Invalid Entry Format----");
@@ -113,7 +140,7 @@ public class PetDatabase {
                 }
             }
         }
-        System.out.println(addedCount + " pets added");
+        System.out.println(addedCount + " pet(s) added");
     }
     
     //method to display all pets in database
