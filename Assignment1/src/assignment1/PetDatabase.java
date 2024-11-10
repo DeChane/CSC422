@@ -1,12 +1,18 @@
 /*
 Name: Nick DeChane
 Written: 11/1/2024
-Assignment: 1 - pet database
+Assignment: pet database
 Description: A program that allows a user to add pets to a database, view all pets added, update any existing pets,
              remove existing pers, and search for pets by name or age.
+
+Revised: 11/9/2024 
  */
 package assignment1;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -46,6 +52,7 @@ public class PetDatabase {
     //ArrayList used as database
     static ArrayList<Pet> pets = new ArrayList<>();
     static Scanner s = new Scanner(System.in);
+    static String filename = "petDatabase.txt";
     
     //method to display menu and retrieve input from user
     private static int getUserChoice() {
@@ -75,7 +82,7 @@ public class PetDatabase {
     }
     
     //method to add pets to the ArrayList database
-    private static void addPets(){
+    private static void addPets() throws FileNotFoundException{
         String petInput = "";
         s.nextLine();
         int addedCount = 0;
@@ -95,6 +102,7 @@ public class PetDatabase {
                 //checks that array contains only right number of entities to create a pet
                 if (TempArray.length == 2) {
                 pets.add(new Pet(TempArray[0], Integer.parseInt(TempArray[1])));
+                PetDatabase.saveDatabase();
                 
                 //updates number of pets added this session
                 addedCount += 1;
@@ -168,7 +176,7 @@ public class PetDatabase {
     }
     
     //method to update an exist pets age or name
-    private static void updatePet(){
+    private static void updatePet() throws FileNotFoundException{
         int updateID = -1;
         
         //Display table to allow user to select the index of the pet they wish to update
@@ -208,6 +216,7 @@ public class PetDatabase {
             //update name and age
             pets.get(updateID).setName(TempArray[0]);
             pets.get(updateID).setAge(Integer.parseInt(TempArray[1]));
+            PetDatabase.saveDatabase();
             
             //display old information and what it was changed to.
             System.out.printf("Pet updated from: %s %d\n", oldName, oldAge);
@@ -220,7 +229,7 @@ public class PetDatabase {
     }
     
     //method to remove pet from ArrayList based on idex/ID of pet, displays information of pet removed too
-    private static void removePet(){
+    private static void removePet() throws FileNotFoundException{
         int removeID = -1;
 
         //Display table to allow user to select the index of the pet they wish to remove
@@ -246,6 +255,7 @@ public class PetDatabase {
         System.out.printf("%s %d has been removed\n", pets.get(removeID).getName(), pets.get(removeID).getAge());
         
         pets.remove(removeID);
+        PetDatabase.saveDatabase();
     }
     
     //method to print a properly formated table header
@@ -263,9 +273,34 @@ public class PetDatabase {
         System.out.println("+----------------------+\n" + rowCount + " pets in database.");
     }
     
-    public static void main(String[] args) {
+    //method loads all of the lines from the txt file assigned in filename
+    private static void loadDatabase()throws FileNotFoundException {
+        FileInputStream db = new FileInputStream(filename);
+        Scanner scnr = new Scanner(db);
+        
+        while(scnr.hasNextLine()) {
+            String[] TempArray = scnr.nextLine().split(" ");
+            pets.add(new Pet(TempArray[0], Integer.parseInt(TempArray[1])));   
+        }
+    }
+    
+    //method saves all of the animals in the ArrayList to the txt file assigned in filename
+    private static void saveDatabase() throws FileNotFoundException{
+        FileOutputStream fileOut = new FileOutputStream(filename);
+        PrintWriter outFile = new PrintWriter(fileOut);
+        
+        for(int i = 0; i < pets.size(); ++i) {
+            outFile.println(pets.get(i).getName() + " " + pets.get(i).getAge());
+        }
+        outFile.close();
+    }
+    
+    public static void main(String[] args) throws FileNotFoundException {
         // TODO code application logic here
         boolean isRunning = true;
+        
+        //initial call to load the database from the textfile
+        PetDatabase.loadDatabase();
         
         while(isRunning) {
             switch(PetDatabase.getUserChoice()) {
